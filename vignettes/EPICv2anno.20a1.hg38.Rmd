@@ -1,0 +1,66 @@
+---
+title: "Use of IlluminaHumanMethylationEPICv2anno.20a1.hg38"
+author: "Zuguang Gu (z.gu@dkfz.de)"
+date: '`r Sys.Date()`'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Use of IlluminaHumanMethylationEPICv2anno.20a1.hg38}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, echo = FALSE, message = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    fig.align = "center")
+```
+
+This package provides annotations for Illumina methylation EPIC array v2.0. The data is based on the file https://support.illumina.com/content/dam/illumina-support/documents/downloads/productfiles/methylationepic/MethylationEPIC%20v2%20Files.zip from 
+  https://support.illumina.com/array/array_kits/infinium-methylationepic-beadchip-kit/downloads.html.
+
+When using with the **minfi** package, you can manually set the "annotation" element by providing the surfix (removing the string "IlluminaHumanMethylationEPICv2anno."):
+
+```{r, eval = FALSE}
+RGset = read.metharray.exp(...)
+
+# explained in the IlluminaHumanMethylationEPICv2manifest package
+annotation(RGset)["array"] = "IlluminaHumanMethylationEPICv2"
+
+annotation(RGset)["annotation"] = "20a1.hg38"
+```
+
+## Compare EPIC array v1 and v2 probes
+
+Next we compared CpG annotation in the package **IlluminaHumanMethylationEPICv2anno.20a1.hg38** and the package **IlluminaHumanMethylationEPICanno.ilm10b4.hg19**.
+
+
+```{r}
+library(IlluminaHumanMethylationEPICv2anno.20a1.hg38)
+library(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)
+
+cgi1 = IlluminaHumanMethylationEPICanno.ilm10b4.hg19::Islands.UCSC
+cgi2 = IlluminaHumanMethylationEPICv2anno.20a1.hg38::Islands.UCSC
+```
+
+Following code shows the number of probes in each CpG feature. Note in **IlluminaHumanMethylationEPICanno.ilm10b4.hg19**, CGI shores and shelves are additionally classified as `N_Shore`/`S_Shore` and `N_Shelf`/`S_Shelf`, while in **IlluminaHumanMethylationEPICv2anno.20a1.hg38** not.
+
+```{r}
+t1 = table(gsub("(N|S)_", "", cgi1$Relation_to_Island))
+t1
+t2 = table(cgi2$Relation_to_Island)
+t2
+
+t2 - t1
+(t2 - t1)/t1
+```
+
+## Session info
+
+```{r, echo = FALSE}
+sessionInfo()
+```
