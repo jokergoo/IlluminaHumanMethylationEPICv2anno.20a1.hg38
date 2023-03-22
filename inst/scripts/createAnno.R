@@ -9,7 +9,8 @@ library(minfi)
 
 manifestFile <- "../data_EPIC_v2/EPIC-8v2-0_A1.csv"
 
-maniTmp <- minfi:::read.manifest.EPIC(manifestFile)
+source("inst/scripts/read.manifest.EPIC.R")
+maniTmp <- read.manifest.EPIC(manifestFile)
 anno <- maniTmp$manifest
 
 ## Checking start
@@ -22,15 +23,14 @@ table(substr(dropCpGs, 1,2))
 ## Checking done
 
 # probe names can be duplicated and only affect the following three columns
-IlmnID = tapply(anno$IlmnID, anno$Name, paste, collapse = ";")
-AddressA_ID = tapply(anno$AddressA_ID, anno$Name, paste, collapse = ";")
-AddressB_ID = tapply(anno$AddressB_ID, anno$Name, paste, collapse = ";")
+# IlmnID = tapply(anno$IlmnID, anno$Name, paste, collapse = ";")
+# AddressA_ID = tapply(anno$AddressA_ID, anno$Name, paste, collapse = ";")
+# AddressB_ID = tapply(anno$AddressB_ID, anno$Name, paste, collapse = ";")
 
-
-anno = anno[!duplicated(anno$Name), ]
-anno$IlmnID = IlmnID[anno$Name]
-anno$AddressA_ID = AddressA_ID[anno$Name]
-anno$AddressB_ID = AddressB_ID[anno$Name]
+# anno = anno[!duplicated(anno$Name), ]
+# anno$IlmnID = IlmnID[anno$Name]
+# anno$AddressA_ID = AddressA_ID[anno$Name]
+# anno$AddressB_ID = AddressB_ID[anno$Name]
 
 anno = anno[anno$CHR %in% paste0("chr", c(1:22, "X", "Y")), ]
 manifestList <- maniTmp$manifestList
