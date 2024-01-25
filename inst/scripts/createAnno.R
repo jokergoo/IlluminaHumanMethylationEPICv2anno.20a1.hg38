@@ -87,7 +87,7 @@ usedColumns <- c(names(Manifest), names(SNPs.Illumina),
                    "Chromosome_36", "Coordinate_36", "Genome_Build"),
                  c("UCSC_CpG_Islands_Name", "Relation_to_UCSC_CpG_Island"))
 Other <- anno[, setdiff(names(anno), c(usedColumns, "Source_Seq", "Forward_Sequence", "Top_Sequence", "GencodeV41_Accession",
-                                       "UCSC_RefGene_Group", "UCSC_RefGene_Accession", "GencodeV41_Group", "Regulatory_Feature_Name",
+                                       "UCSC_RefGene_Accession", "GencodeV41_Group", "Regulatory_Feature_Name",
                                        "DNase_Hypersensitivity_NAME", "Encode_CisReg_Site", "Encode_CisReg_Site_Evid",
                                        "OpenChromatin_NAME", "OpenChromatin_Evidence_Count"))]
 nam <- names(Other)
