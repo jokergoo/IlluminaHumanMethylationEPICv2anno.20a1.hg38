@@ -19,9 +19,9 @@ annotation(RGset)["annotation"] = "20a1.hg38"
 ## Install
 
 ```r
-BiocManager::install("jokergoo/IlluminaHumanMethylationEPICv2anno.20a1.hg38")
+BiocManager::install("BigGoose/IlluminaHumanMethylationEPICv2anno.20a1.hg38")
 # or
-remotes::install_github("jokergoo/IlluminaHumanMethylationEPICv2anno.20a1.hg38")
+remotes::install_github("BigGoose/IlluminaHumanMethylationEPICv2anno.20a1.hg38")
 ```
 
 
