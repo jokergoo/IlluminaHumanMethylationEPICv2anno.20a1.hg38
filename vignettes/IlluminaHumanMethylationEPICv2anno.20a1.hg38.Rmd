@@ -119,6 +119,7 @@ probe IDs. But if you really need the original probe IDs, you can use the
 normalized by the **minfi** package.
 
 The following example reads raw data from one sample and performs preprocessing with **minfi**.
+`aggregate_to_probes()` calculates mean value for duplicated probes.
 
 ```{r}
 tempdir = tempdir()
@@ -137,9 +138,11 @@ annotation(RGset)["array"] = "IlluminaHumanMethylationEPICv2"
 obj = preprocessRaw(RGset)
 # there can be more intermediate steps ...
 beta = getBeta(obj)
+dim(beta)
 head(beta)
 
 beta2 = aggregate_to_probes(beta)
+dim(beta2)
 head(beta2)
 ```
 

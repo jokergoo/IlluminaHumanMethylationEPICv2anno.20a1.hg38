@@ -2,6 +2,6 @@ pandoc: 2.11.4
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  EPICv2anno.20a1.hg38: EPICv2anno.20a1.hg38.html
-last_built: 2024-03-14T12:01Z
+  IlluminaHumanMethylationEPICv2anno.20a1.hg38: IlluminaHumanMethylationEPICv2anno.20a1.hg38.html
+last_built: 2024-03-14T12:36Z
 
