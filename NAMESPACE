@@ -1,2 +1,5 @@
+export("aggregate_to_probes")
+
 import(minfi)
 importFrom(utils, "data")
+

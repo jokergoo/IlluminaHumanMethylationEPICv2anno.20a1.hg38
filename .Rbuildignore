@@ -1,2 +1,6 @@
 temp
 .DS_Store
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+build_pkg_site.R

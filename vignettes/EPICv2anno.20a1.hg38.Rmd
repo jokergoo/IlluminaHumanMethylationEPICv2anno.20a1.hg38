@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 This package provides annotations for Illumina methylation EPIC array v2.0. The data is based on the file https://support.illumina.com/content/dam/illumina-support/documents/downloads/productfiles/methylationepic/MethylationEPIC%20v2%20Files.zip from 
   https://support.illumina.com/array/array_kits/infinium-methylationepic-beadchip-kit/downloads.html.
 
-When using with the **minfi** package, you can manually set the "annotation" element by providing the surfix (removing the string "IlluminaHumanMethylationEPICv2anno."):
+When using with the **minfi** package, you can manually set the "annotation" element by providing the suffix (removing the string "IlluminaHumanMethylationEPICv2anno."):
 
 ```{r, eval = FALSE}
 RGset = read.metharray.exp(...)
@@ -36,7 +36,7 @@ annotation(RGset)["annotation"] = "20a1.hg38"
 
 ## Compare EPIC array v1 and v2 probes
 
-Next we compared CpG annotation in the package **IlluminaHumanMethylationEPICv2anno.20a1.hg38** and the package **IlluminaHumanMethylationEPICanno.ilm10b4.hg19**.
+We compare CpG annotation in the package **IlluminaHumanMethylationEPICv2anno.20a1.hg38** and the package **IlluminaHumanMethylationEPICanno.ilm10b4.hg19**.
 
 
 ```{r}
@@ -47,7 +47,7 @@ cgi1 = IlluminaHumanMethylationEPICanno.ilm10b4.hg19::Islands.UCSC
 cgi2 = IlluminaHumanMethylationEPICv2anno.20a1.hg38::Islands.UCSC
 ```
 
-Following code shows the number of probes in each CpG feature. Note in **IlluminaHumanMethylationEPICanno.ilm10b4.hg19**, CGI shores and shelves are additionally classified as `N_Shore`/`S_Shore` and `N_Shelf`/`S_Shelf`, while in **IlluminaHumanMethylationEPICv2anno.20a1.hg38** not.
+Following code shows the number of probes in each CpG feature. Note in **IlluminaHumanMethylationEPICanno.ilm10b4.hg19**, CGI shores and shelves are additionally classified as "N_Shore"/"S_Shore" and "N_Shelf"/"S_Shelf", while they are simply "Shore" and "Shelf" in **IlluminaHumanMethylationEPICv2anno.20a1.hg38**.
 
 ```{r}
 t1 = table(gsub("(N|S)_", "", cgi1$Relation_to_Island))
@@ -58,6 +58,103 @@ t2
 t2 - t1
 (t2 - t1)/t1
 ```
+
+We can see there are more new probes in the CpG seas.
+
+## Probe IDs are coded differently in EPIC v1 and EPIC v2 packages
+
+In **IlluminaHumanMethylationEPICanno.ilm10b4.hg19** and other related EPIC-v1 packages, probe IDs (e.g. in the format of "cg18478105") are unique in the array. But
+in the packages related to EPIC-v2, probe IDs may be duplicated. Thus, we use the "illumina_ID" (column "IlmnID" in the manifest file, https://knowledge.illumina.com/microarray/general/microarray-general-reference_material-list/000001568) as the ID type for probes in v2-packages. The duplicated probes have the same probe sequence, but locate
+randomly on the array. The illumina ID is a combination of probe ID and a "duplication ID".
+
+
+Let's take `cgi1` and `cgi2` as an example:
+
+```{r}
+dim(cgi1)
+head(cgi1)
+dim(cgi2)
+head(cgi2)
+
+any(duplicated(rownames(cgi1)))
+```
+
+Let's check how many probes have duplicated probe IDs. First remove the suffix to only keep the probe IDs.
+
+```{r}
+illumina_ID = rownames(cgi2)
+probe_ID = gsub("_.*$", "", illumina_ID)
+```
+
+Check the duplication of probe IDs:
+
+```{r}
+tb = table(probe_ID)
+table(tb)
+```
+
+We can see in the most extreme case, a probe ID is repeated 10 times in the array. Let's check what it is:
+
+```{r}
+tb[tb == 10]
+```
+
+```{r}
+illumina_ID[probe_ID == "cg06373096"]
+```
+
+But the locations of these 10 probes are the same:
+
+```{r}
+cgi2[probe_ID == "cg06373096", ]
+```
+
+## Change illumina IDs to probe IDs
+
+If you think illumina IDs as "probe IDs" as in the v1 packages, you can
+basically do all the same analyses without worrying aboutn the format of the
+probe IDs. But if you really need the original probe IDs, you can use the
+`aggregate_to_probes()` function. It works for both annotation data frames in
+**IlluminaHumanMethylationEPICv2anno.20a1.hg38** and the beta matrix
+normalized by the **minfi** package.
+
+The following example reads raw data from one sample and performs preprocessing with **minfi**.
+
+```{r}
+tempdir = tempdir()
+datadir = paste0(tempdir, "/206891110001")
+dir.create(datadir, showWarnings = FALSE)
+
+url = "https://github.com/jokergoo/IlluminaHumanMethylationEPICv2manifest/files/11008723/206891110001_R01C01.zip"
+local = paste0(tempdir, "/206891110001_R01C01.zip")
+download.file(url, dest = local, quiet = TRUE)
+
+unzip(local, exdir = datadir)
+
+library(minfi)
+RGset = read.metharray.exp(datadir)
+annotation(RGset)["array"] = "IlluminaHumanMethylationEPICv2"
+obj = preprocessRaw(RGset)
+# there can be more intermediate steps ...
+beta = getBeta(obj)
+head(beta)
+
+beta2 = aggregate_to_probes(beta)
+head(beta2)
+```
+
+
+`aggregate_to_probes()` can also be applied to the annotation data frames in **IlluminaHumanMethylationEPICv2anno.20a1.hg38**.
+
+```{r}
+head(aggregate_to_probes(cgi2))
+```
+
+```{r, echo = FALSE}
+unlink(datadir)
+unlink(local)
+```
+
 
 ## Session info
 
